@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Protocol {
+  tcp
+  udp
+  icmp
+  icmpv6
+  unknown
+}
+
+enum CaptureMode {
+  real
+  mock
+}
+
+enum CaptureLifecycle {
+  idle
+  starting
+  running
+  stopping
+  stopped
+  failed
+}
+
+model CaptureSession {
+  id           String           @id @default(cuid())
+  name         String?
+  device       String
+  filter       String
+  mode         CaptureMode
+  lifecycle    CaptureLifecycle @default(idle)
+  errorMessage String?
+  startedAt    DateTime         @default(now())
+  endedAt      DateTime?
+  packetCount  Int              @default(0)
+  byteCount    BigInt           @default(0)
+  flowCount    Int              @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  packets      Packet[]
+  flows        Flow[]
+  summaries    TrafficSummary[]
+
+  @@index([device, startedAt])
+}
+
+model Flow {
+  id          String         @id @default(cuid())
+  session     CaptureSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId   String
+  protocol    Protocol
+  srcAddr     String
+  dstAddr     String
+  srcPort     Int?
+  dstPort     Int?
+  packetCount Int            @default(0)
+  byteCount   BigInt         @default(0)
+  firstSeenAt DateTime
+  lastSeenAt  DateTime
+  createdAt   DateTime       @default(now())
+
+  packets     Packet[]
+
+  @@index([sessionId, protocol])
+  @@index([sessionId, srcAddr, dstAddr])
+  @@index([sessionId, srcPort, dstPort])
+  @@unique([sessionId, protocol, srcAddr, dstAddr, srcPort, dstPort])
+}
+
+model Packet {
+  id             String         @id @default(cuid())
+  session        CaptureSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId      String
+  flow           Flow?          @relation(fields: [flowId], references: [id])
+  flowId         String?
+  capturedAt     DateTime
+  capturedLength Int
+  originalLength Int
+  truncated      Boolean        @default(false)
+  protocol       Protocol
+  srcMac         String?
+  dstMac         String?
+  srcAddr        String?
+  dstAddr        String?
+  srcPort        Int?
+  dstPort        Int?
+  ttl            Int?
+  hopLimit       Int?
+  payloadLength  Int?
+  tcpFlags       Json?
+  rawPayload     Bytes?
+
+  @@index([sessionId, capturedAt])
+  @@index([sessionId, protocol])
+  @@index([flowId])
+}
+
+model TrafficSummary {
+  id                   String         @id @default(cuid())
+  session              CaptureSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId            String
+  intervalStart        DateTime
+  intervalEnd          DateTime
+  packetCount          Int
+  byteCount            BigInt
+  topTalkers           Json
+  protocolBreakdown    Json
+  createdAt            DateTime @default(now())
+
+  @@unique([sessionId, intervalStart, intervalEnd])
+  @@index([sessionId, intervalStart])
+}

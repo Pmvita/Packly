@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env.local
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://packly:packly@db:5432/packly}
+      CAPTURE_INTERFACE: ${CAPTURE_INTERFACE:-eth0}
+      SOCKET_IO_PATH: ${SOCKET_IO_PATH:-/api/socket}
+      SUMMARY_ROLLUP_INTERVAL_MINUTES: ${SUMMARY_ROLLUP_INTERVAL_MINUTES:-5}
+    depends_on:
+      db:
+        condition: service_healthy
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: packly
+      POSTGRES_PASSWORD: packly
+      POSTGRES_DB: packly
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U packly']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+*** End Patch
+
