@@ -1,5 +1,61 @@
 # Packly
 
+<div align="center">
+
+![GitHub Repo stars](https://img.shields.io/github/stars/Pmvita/packly?style=for-the-badge&logo=github&logoColor=white)
+![GitHub forks](https://img.shields.io/github/forks/Pmvita/packly?style=for-the-badge&logo=github&logoColor=white)
+![GitHub issues](https://img.shields.io/github/issues/Pmvita/packly?style=for-the-badge&logo=github&logoColor=white)
+![GitHub license](https://img.shields.io/github/license/Pmvita/packly?style=for-the-badge&logo=github&logoColor=white)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=Pmvita.packly&left_color=red&right_color=blue)
+
+</div>
+
+<div align="center">
+
+## 🚀 Development Status
+
+![Status](https://img.shields.io/badge/Status-Stable-green?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)
+
+## 🌐 Connect With Me
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/pierre-mvita/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white)](https://pierre-mvita.vercel.app/)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:Petermvita@hotmail.com)
+
+## 💻 Core Framework
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+
+## 💾 Database & ORM
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+
+## 🔌 Networking & Communication
+
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![libpcap](https://img.shields.io/badge/libpcap-FF0000?style=for-the-badge&logo=capture&logoColor=white)
+
+## 📊 Monitoring & Observability
+
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+
+## 🧪 Testing & Quality
+
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
+
+## 🐳 DevOps
+
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+
+</div>
+
 Packly is a full-stack packet inspector: capture frames with libpcap, decode protocol stacks, persist flows in PostgreSQL, and visualise everything from a Next.js dashboard. Capture utilities, APIs, background jobs, and UI all live in one codebase so you can iterate quickly and still deploy with confidence.
 
 ## Highlights
@@ -134,6 +190,16 @@ src/
   server/            # Capture manager, persistence, background jobs
 tests/               # Vitest suites
 ```
+
+## 📊 GitHub Stats
+
+<div align="center">
+
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=Pmvita&repo=packly&show_icons=true&theme=dark&hide_border=true&bg_color=0D1117&title_color=FF0000&icon_color=FF0000)
+
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=Pmvita&repo=packly&layout=compact&theme=dark&hide_border=true&bg_color=0D1117&title_color=FF0000)
+
+</div>
 
 ## Roadmap snapshot
 

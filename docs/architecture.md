@@ -39,25 +39,32 @@ Packly keeps packet capture, processing, persistence, and presentation inside a 
 
 ## Data flow
 
-```
-┌──────────────┐     ┌────────────────┐     ┌────────────────────┐     ┌──────────────┐
-│ Network NIC  │ ──► │ Capture Manager│ ──► │ Session Supervisor │ ──► │ Socket.IO    │
-└──────────────┘     └────────────────┘     └────────────────────┘     └──────┬───────┘
-                                                                               │
-                                                                               ▼
-                                                                     ┌─────────────────┐
-                                                                     │ React Dashboard │
-                                                                     └─────────────────┘
-                                                                               │
-                                                                               ▼
-                                                                     ┌─────────────────┐
-                                                                     │ Postgres + ORM  │
-                                                                     └─────────────────┘
+```mermaid
+flowchart TD
+    A["🌐 Network NIC"] --> B["📡 Capture Manager"]
+    B --> C["🎯 Session Supervisor"]
+    C --> D["🔌 Socket.IO"]
+    
+    D --> E["⚛️ React Dashboard"]
+    
+    E --> F["💾 Postgres + ORM"]
+    C --> F
+    
+    F -.->|"Historical API<br/>Requests"| E
+    C -.->|"Batched Inserts<br/>& Scheduled Jobs"| F
+    
+    style A fill:#E8F5E9,stroke:#4CAF50,color:#000
+    style B fill:#E3F2FD,stroke:#2196F3,color:#000
+    style C fill:#FFF3E0,stroke:#FF9800,color:#000
+    style D fill:#F3E5F5,stroke:#9C27B0,color:#000
+    style E fill:#FFEBEE,stroke:#F44336,color:#000
+    style F fill:#E0F2F1,stroke:#009688,color:#000
 ```
 
-- Real-time packets travel Capture Manager → Session Supervisor → Socket.IO → React components.
-- Batched inserts and scheduled jobs write packets/flows to Postgres.
-- Historical API requests query Postgres and stream results back via route handlers.
+**Flow Description:**
+- **Real-time packets**: Capture Manager → Session Supervisor → Socket.IO → React components
+- **Persistent storage**: Batched inserts and scheduled jobs write packets/flows to Postgres
+- **Historical queries**: API requests query Postgres and stream results back via route handlers
 
 ## Security & permissions
 
