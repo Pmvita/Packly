@@ -9,7 +9,7 @@ import { SiteHeader } from '@/components/SiteHeader';
 
 export default function HistorySessionPage() {
   const params = useParams<{ id: string }>();
-  const id = params.id;
+  const id = params?.id ?? '';
 
   const authQuery = useQuery({
     queryKey: ['auth-status'],

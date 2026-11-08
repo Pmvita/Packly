@@ -30,7 +30,15 @@ export async function GET(request: NextRequest) {
         flowCount: true,
       },
     });
-    return NextResponse.json({ sessions }, { status: 200 });
+    return NextResponse.json(
+      {
+        sessions: sessions.map((session) => ({
+          ...session,
+          byteCount: session.byteCount.toString(),
+        })),
+      },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       {

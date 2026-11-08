@@ -63,6 +63,8 @@ Build list: [`TODO.md`](./TODO.md).
 
 </div>
 
+**Live (UI preview):** [https://packly-pierres-projects-3ccb9894.vercel.app](https://packly-pierres-projects-3ccb9894.vercel.app)
+
 Packly is a full-stack packet inspector: capture frames with libpcap, decode protocol stacks, persist flows in PostgreSQL, and visualise everything from a Next.js dashboard. Capture utilities, APIs, background jobs, and UI all live in one codebase so you can iterate quickly and still deploy with confidence.
 
 ## Design
@@ -88,7 +90,7 @@ Motion: live status pulse on capture indicators, staggered row fade-in on packet
 
 ## Architecture note
 
-Packly is a **web app + server-side capture engine**, not a desktop app. The browser only renders results; packet sniffing runs in the Node process on the host (which needs NIC privileges). **Full capture needs Docker/VM with NIC privileges** — not a serverless-only host. A marketing/UI preview may deploy to Vercel (`https://packly-gold.vercel.app`), but live sniffing, Socket.IO capture, and Postgres persistence are intended for Docker Compose (see below).
+Packly is a **web app + server-side capture engine**, not a desktop app. The browser only renders results; packet sniffing runs in the Node process on the host (which needs NIC privileges). **Full capture needs Docker/VM with NIC privileges** — not a serverless-only host. A marketing/UI preview may deploy to Vercel (`https://packly-pierres-projects-3ccb9894.vercel.app`), but live sniffing, Socket.IO capture, and Postgres persistence are intended for Docker Compose (see below).
 
 ## Highlights
 
@@ -150,6 +152,9 @@ All configuration loads from `.env.local` or the container environment. Key entr
 | `CAPTURE_FILTER` | Default BPF filter (`tcp`, `tcp port 80`, etc.). |
 | `CAPTURE_PROMISCUOUS` | Enable promiscuous mode (default `true`). |
 | `SUMMARY_ROLLUP_INTERVAL_MINUTES` | Interval for background traffic summaries. |
+| `PACKET_TTL_DAYS` | Delete persisted packets older than N days (default `30`). |
+| `PACKET_TTL_CLEANUP_INTERVAL_HOURS` | How often the TTL job runs (default `6`). |
+| `PACKLY_API_KEY` | When set, required for start/stop/history via `X-API-Key` or `Authorization: Bearer`. |
 | `SOCKET_IO_PATH` / `NEXT_PUBLIC_SOCKET_PATH` | Socket.IO handshake path (defaults to `/api/socket`). |
 | `NEXT_PUBLIC_DEFAULT_INTERFACE`, `NEXT_PUBLIC_DEFAULT_FILTER` | Client defaults for the dashboard. |
 
@@ -177,7 +182,9 @@ GitHub Actions (`.github/workflows/ci.yml`) runs `npm run lint` and `npm run tes
 | `/api/capture/status` | `GET` | Current capture manager state & metrics. |
 | `/api/capture/start` | `POST` | Start a capture session (`device`, `filter`, `useMock`, etc.). |
 | `/api/capture/stop` | `POST` | Stop the running capture session. |
-| `/api/capture/history` | `GET` | Placeholder (501) until historical queries ship. |
+| `/api/capture/history` | `GET` | List recent capture sessions (scoped by API key ownership when present). |
+| `/api/capture/history/:id` | `GET` | Session detail with flows + up to 200 packets. |
+| `/api/capture/auth-status` | `GET` | Whether `PACKLY_API_KEY` is configured (`required: boolean`). |
 | `/api/capture/playback` | `GET` | Bundled scan-like sample → packets + diagnostic markdown. |
 | `/api/capture/playback` | `POST` | Upload a classic Ethernet `.pcap` (2 MB max). |
 | `/api/socket` | `Socket.IO` | Realtime stream (status + packets + errors). |
@@ -190,6 +197,7 @@ Socket event names: `capture:status`, `capture:packet`, `capture:error`, plus `c
 - **Logging** uses `pino` with service metadata; messages originate from the capture manager, persistence coordinator, and summary scheduler.
 - **Metrics** powered by `prom-client`: total packets, packet size histogram, and capture status gauges.
 - **Summary scheduler** (`src/server/background/summary-scheduler.ts`) runs every `SUMMARY_ROLLUP_INTERVAL_MINUTES` to persist rollups via Prisma (top talkers, protocol breakdowns).
+- **Packet TTL scheduler** (`src/server/background/packet-ttl-scheduler.ts`) clears raw payloads after 24h and deletes packets older than `PACKET_TTL_DAYS`.
 
 Expose `/api/metrics` to your Prometheus or use Docker compose to bind it to your monitoring stack.
 
@@ -246,8 +254,9 @@ tests/               # Vitest suites
 - [x] Dockerfile & Compose setup.
 - [x] Diagnostic markdown report (port-spread / RST / SYN).
 - [x] Sample + uploaded PCAP playback (classic pcap, Ethernet).
-- [ ] Historical queries against PostgreSQL.
-- [ ] Authentication / RBAC for multi-user deployments.
+- [x] Historical queries against PostgreSQL (`/history` + `/api/capture/history`).
+- [x] Optional API-key auth + ownership scoping (`PACKLY_API_KEY`).
+- [x] Packet TTL cleanup job (`PACKET_TTL_DAYS`).
 - [ ] Alerting rules & webhook integrations.
 
 Refer to `packet.plan.md` for the full implementation roadmap.

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Packly | Packet Inspector',
     description: 'Capture, decode, and visualise network traffic.',
-    url: 'https://packly-gold.vercel.app',
+    url: 'https://packly-pierres-projects-3ccb9894.vercel.app',
     siteName: 'Packly',
     images: [{ url: '/og.png', width: 1200, height: 630 }],
     type: 'website',
