@@ -63,7 +63,7 @@ Build list: [`TODO.md`](./TODO.md).
 
 </div>
 
-**Live (UI preview):** [https://packly-pierres-projects-3ccb9894.vercel.app](https://packly-pierres-projects-3ccb9894.vercel.app)
+**Live (UI preview):** [https://packly-gold.vercel.app](https://packly-gold.vercel.app)
 
 Packly is a full-stack packet inspector: capture frames with libpcap, decode protocol stacks, persist flows in PostgreSQL, and visualise everything from a Next.js dashboard. Capture utilities, APIs, background jobs, and UI all live in one codebase so you can iterate quickly and still deploy with confidence.
 
@@ -90,7 +90,7 @@ Motion: live status pulse on capture indicators, staggered row fade-in on packet
 
 ## Architecture note
 
-Packly is a **web app + server-side capture engine**, not a desktop app. The browser only renders results; packet sniffing runs in the Node process on the host (which needs NIC privileges). **Full capture needs Docker/VM with NIC privileges** — not a serverless-only host. A marketing/UI preview may deploy to Vercel (`https://packly-pierres-projects-3ccb9894.vercel.app`), but live sniffing, Socket.IO capture, and Postgres persistence are intended for Docker Compose (see below).
+Packly is a **web app + server-side capture engine**, not a desktop app. The browser only renders results; packet sniffing runs in the Node process on the host (which needs NIC privileges). **Full capture needs Docker/VM with NIC privileges** — not a serverless-only host. A marketing/UI preview may deploy to Vercel (`https://packly-gold.vercel.app`), but live sniffing, Socket.IO capture, and Postgres persistence are intended for Docker Compose (see below).
 
 ## Highlights
 
