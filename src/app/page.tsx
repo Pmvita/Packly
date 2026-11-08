@@ -4,10 +4,16 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col gap-6 bg-slate-950 pb-16">
       <section className="bg-gradient-to-b from-slate-900 to-slate-950 px-6 pb-10 pt-12">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 text-slate-100">
-          <span className="inline-flex w-fit rounded-full border border-slate-700/70 px-3 py-1 text-xs font-medium uppercase tracking-wide text-slate-300/80">
-            Packly
-          </span>
+              <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 text-slate-100">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex w-fit rounded-full border border-slate-700/70 px-3 py-1 text-xs font-medium uppercase tracking-wide text-slate-300/80">
+                    Packly
+                  </span>
+                  <nav className="flex gap-4 text-sm text-slate-300">
+                    <a href="/" className="hover:text-white">Dashboard</a>
+                    <a href="/history" className="hover:text-white">History</a>
+                  </nav>
+                </div>
           <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
             Deep visibility into your network traffic.
           </h1>
