@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { LiveDashboard } from '@/features/live/LiveDashboard';
 
 export default function Home() {
@@ -11,9 +12,9 @@ export default function Home() {
               Packly
             </span>
             <nav className="flex gap-6 text-sm text-slate-300">
-              <a href="/" className="transition hover:text-emerald-300">Dashboard</a>
-              <a href="/history" className="transition hover:text-emerald-300">History</a>
-            </nav>
+                          <Link href="/" className="transition hover:text-emerald-300">Dashboard</Link>
+                          <Link href="/history" className="transition hover:text-emerald-300">History</Link>
+                        </nav>
           </div>
           <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
             Deep visibility into your network traffic.

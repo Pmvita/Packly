@@ -159,7 +159,7 @@ async function ensureFlow(
   } as const;
 
   const existing = await tx.flow.findUnique({
-      where: uniqueWhere as any,
+      where: uniqueWhere as unknown as Prisma.FlowWhereUniqueInput,
     });
 
   const now = new Date(packet.timestampMs);
@@ -167,7 +167,7 @@ async function ensureFlow(
 
   if (existing) {
     const updated = await tx.flow.update({
-        where: uniqueWhere as any,
+        where: uniqueWhere as unknown as Prisma.FlowWhereUniqueInput,
       data: {
         lastSeenAt: now,
         packetCount: { increment: 1 },

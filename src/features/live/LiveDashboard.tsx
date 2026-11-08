@@ -43,6 +43,7 @@ export function LiveDashboard() {
 
     useEffect(() => {
       if (interfacesQuery.data) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedInterface((current) => {
           if (current) return current;
           return (
@@ -62,7 +63,9 @@ export function LiveDashboard() {
     });
 
     useEffect(() => {
-      if (statusQuery.data) setStatus(statusQuery.data);
+      if (statusQuery.data) {
+        setStatus(statusQuery.data);
+      }
     }, [statusQuery.data, setStatus]);
 
   const startMutation = useMutation({
@@ -143,47 +146,47 @@ export function LiveDashboard() {
   };
 
   return (
-    <div className="grid gap-6">
-      <StatusPanel
-        connected={connected}
-        status={status}
-        interfaces={interfacesQuery.data ?? []}
-        interfacesLoading={interfacesQuery.isLoading}
-        interfacesError={interfacesQuery.error as Error | null}
-        selectedInterface={selectedInterface}
-        onSelectInterface={setSelectedInterface}
-        filter={filter}
-        onFilterChange={setFilter}
-        onRefreshInterfaces={() =>
-          queryClient.invalidateQueries({ queryKey: ['capture-interfaces'] })
-        }
-        onStartCapture={handleStartCapture}
-        onStopCapture={handleStopCapture}
-        isStarting={startMutation.isPending}
-        isStopping={stopMutation.isPending}
-        packetsCaptured={status?.metrics.totalPackets ?? 0}
-        useMock={useMock}
-        onToggleMock={setUseMock}
-        lastError={lastError}
-      />
+      <div className="grid gap-4">
+        <StatusPanel
+          connected={connected}
+          status={status}
+          interfaces={interfacesQuery.data ?? []}
+          interfacesLoading={interfacesQuery.isLoading}
+          interfacesError={interfacesQuery.error as Error | null}
+          selectedInterface={selectedInterface}
+          onSelectInterface={setSelectedInterface}
+          filter={filter}
+          onFilterChange={setFilter}
+          onRefreshInterfaces={() =>
+            queryClient.invalidateQueries({ queryKey: ['capture-interfaces'] })
+          }
+          onStartCapture={handleStartCapture}
+          onStopCapture={handleStopCapture}
+          isStarting={startMutation.isPending}
+          isStopping={stopMutation.isPending}
+          packetsCaptured={status?.metrics.totalPackets ?? 0}
+          useMock={useMock}
+          onToggleMock={setUseMock}
+          lastError={lastError}
+        />
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-8">
-          <PacketTable packets={packets.slice(-50)} />
-        </div>
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          <ProtocolChart protocols={protocolSummary} />
-          <DiagnosticPanel
-            packets={packets}
-            isPlayingSample={isPlayingSample}
-            onPlaySample={handlePlaySample}
-            onUploadPcap={handleUploadPcap}
-          />
-          <LatencyCard packets={packets} />
+        <div className="grid gap-4 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <PacketTable packets={packets.slice(-50)} />
+          </div>
+          <div className="lg:col-span-4 flex flex-col gap-4">
+            <ProtocolChart protocols={protocolSummary} />
+            <DiagnosticPanel
+              packets={packets}
+              isPlayingSample={isPlayingSample}
+              onPlaySample={handlePlaySample}
+              onUploadPcap={handleUploadPcap}
+            />
+            <LatencyCard packets={packets} />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 }
 
 interface LatencyCardProps {
