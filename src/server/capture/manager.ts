@@ -16,6 +16,7 @@ import {
   setCaptureStatus,
 } from '@/observability/metrics';
 import { getSummaryScheduler } from '@/server/background/summary-scheduler';
+import { getPacketTtlScheduler } from '@/server/background/packet-ttl-scheduler';
 
 type ManagedSession = CaptureSession | ReturnType<typeof createMockCaptureSession>;
 
@@ -36,6 +37,8 @@ export interface CaptureManagerState {
 export interface StartCaptureOptions extends CaptureOptions {
   useMock?: boolean;
   fallbackToMock?: boolean;
+  /** Hashed API key used to own the persisted CaptureSession. */
+  ownerApiKey?: string | null;
 }
 
 const DEFAULT_FALLBACK =
@@ -108,6 +111,7 @@ class CaptureManager extends EventEmitter {
     }
 
     await this.stop();
+    this.persistence.setOwnerApiKey(options.ownerApiKey ?? null);
 
     const shouldMock = options.useMock ?? false;
     const fallbackToMock = options.fallbackToMock ?? DEFAULT_FALLBACK;
@@ -309,6 +313,7 @@ export function getCaptureManager(): CaptureManager {
   if (!globalForManager.__packlyCaptureManager) {
     globalForManager.__packlyCaptureManager = new CaptureManager();
     getSummaryScheduler();
+    getPacketTtlScheduler();
   }
   return globalForManager.__packlyCaptureManager;
 }

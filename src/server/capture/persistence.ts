@@ -22,6 +22,7 @@ export class CapturePersistenceCoordinator {
   private sessionRecord: CaptureSession | null = null;
   private queue: PendingPacket[] = [];
   private flushing = false;
+  private ownerApiKey: string | null = null;
 
   constructor() {
     this.enabled = Boolean(process.env.DATABASE_URL);
@@ -34,6 +35,10 @@ export class CapturePersistenceCoordinator {
 
   isEnabled() {
     return this.enabled;
+  }
+
+  setOwnerApiKey(ownerApiKey: string | null) {
+    this.ownerApiKey = ownerApiKey;
   }
 
   async handleStatus(state: CaptureManagerState) {
@@ -51,6 +56,7 @@ export class CapturePersistenceCoordinator {
           device: state.device,
           filter: state.filter ?? '',
           mode: state.mode === 'mock' ? 'mock' : 'real',
+          ownerApiKey: this.ownerApiKey,
         });
         return;
       }

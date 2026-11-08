@@ -45,40 +45,38 @@ export function StatusPanel({
   lastError,
 }: StatusPanelProps) {
   const statusLabel = status ? status.status : 'idle';
-  const statusColor = getStatusColor(statusLabel);
+  const pulseState = getPulseState(statusLabel, connected);
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900 px-6 py-5">
+    <div className="panel px-6 py-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${connected ? 'bg-emerald-400' : 'bg-slate-500'} ${connected ? 'animate-pulse' : ''}`}
-            />
-            <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+            <span className="status-pulse" data-state={pulseState} />
+            <span className="font-data text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--fog)]/65">
               {connected ? 'Realtime stream connected' : 'Offline'}
             </span>
           </div>
-          <h2 className="mt-1.5 text-xl font-semibold text-slate-100">
+          <h2 className="mt-2 font-display text-xl font-semibold text-[#e8fff7]">
             Capture control
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--fog)]/70">
             Configure interface, update filters, and manage capture sessions.
           </p>
         </div>
-        <div className="flex items-center gap-2 self-start rounded-md border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs font-medium text-slate-200">
-          <span className={`h-1.5 w-1.5 rounded-full ${statusColor}`} />
-          <span className="uppercase tracking-wider">{statusLabel}</span>
+        <div className="flex items-center gap-2 self-start border border-[var(--line)] bg-[var(--ink)] px-3 py-1.5 font-data text-[10px] font-medium uppercase tracking-[0.14em] text-[#e8fff7]">
+          <span className="status-pulse" data-state={pulseState} />
+          <span>{statusLabel}</span>
         </div>
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-5 space-y-3">
-          <label className="flex flex-col gap-1 text-sm text-slate-300">
+        <div className="space-y-3 lg:col-span-5">
+          <label className="flex flex-col gap-1 text-sm text-[var(--fog)]">
             Interface
             <div className="flex gap-2">
               <select
-                className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none transition focus:border-emerald-400"
+                className="ink-input"
                 value={selectedInterface}
                 onChange={(event) => onSelectInterface(event.target.value)}
                 disabled={interfacesLoading}
@@ -92,18 +90,18 @@ export function StatusPanel({
               <button
                 type="button"
                 onClick={onRefreshInterfaces}
-                className="rounded-md border border-slate-700 px-3 text-xs font-medium uppercase tracking-wide text-slate-200 transition hover:border-slate-500"
+                className="btn-ghost !px-3 !py-2 text-xs uppercase tracking-wide"
                 disabled={interfacesLoading}
               >
                 Refresh
               </button>
             </div>
             {interfacesError ? (
-              <span className="text-xs text-rose-400">
+              <span className="text-xs text-[var(--signal)]">
                 {interfacesError.message}
               </span>
             ) : (
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-[var(--fog)]/55">
                 {interfacesLoading
                   ? 'Loading interfaces...'
                   : interfaces.length
@@ -113,31 +111,31 @@ export function StatusPanel({
             )}
           </label>
 
-          <label className="flex flex-col gap-1 text-sm text-slate-300">
+          <label className="flex flex-col gap-1 text-sm text-[var(--fog)]">
             BPF filter
             <input
-              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none transition focus:border-emerald-400"
+              className="ink-input font-data"
               value={filter}
               onChange={(event) => onFilterChange(event.target.value)}
               placeholder="tcp port 80"
             />
-            <span className="text-xs text-slate-500">
-              e.g. <code className="text-emerald-300">tcp port 443</code> or{' '}
-              <code className="text-emerald-300">icmp</code>
+            <span className="text-xs text-[var(--fog)]/55">
+              e.g. <code className="text-[var(--phosphor)]">tcp port 443</code> or{' '}
+              <code className="text-[var(--phosphor)]">icmp</code>
             </span>
           </label>
 
-          <label className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-400">
+          <label className="flex items-center gap-2 font-data text-[10px] uppercase tracking-[0.12em] text-[var(--fog)]/70">
             <input
               type="checkbox"
               checked={useMock}
               onChange={(event) => onToggleMock(event.target.checked)}
-              className="h-4 w-4 rounded border-slate-600 text-emerald-400 focus:ring-emerald-400"
+              className="h-4 w-4 accent-[var(--phosphor)]"
             />
             Use mock capture (default on Windows — Npcap is optional)
           </label>
         </div>
-        <div className="lg:col-span-7 space-y-4">
+        <div className="space-y-4 lg:col-span-7">
           <div className="grid gap-3 sm:grid-cols-3">
             <MetricCard
               label="Packets captured"
@@ -162,7 +160,7 @@ export function StatusPanel({
               type="button"
               onClick={onStartCapture}
               disabled={isStarting || (!useMock && !selectedInterface)}
-              className="inline-flex items-center rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-emerald-700/40 disabled:text-emerald-200"
+              className="btn-phosphor"
             >
               {isStarting ? 'Starting…' : 'Start capture'}
             </button>
@@ -170,20 +168,20 @@ export function StatusPanel({
               type="button"
               onClick={onStopCapture}
               disabled={isStopping}
-              className="inline-flex items-center rounded-md border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-rose-400 hover:text-rose-200 disabled:cursor-not-allowed disabled:border-slate-800 disabled:text-slate-500"
+              className="btn-ghost"
             >
               {isStopping ? 'Stopping…' : 'Stop capture'}
             </button>
-            <span className="text-xs text-slate-500">
+            <span className="font-data text-[10px] text-[var(--fog)]/55">
               Capture path:{' '}
-              <code className="font-mono text-emerald-300">
+              <code className="text-[var(--phosphor)]">
                 {process.env.NEXT_PUBLIC_SOCKET_PATH ?? '/api/socket'}
               </code>
             </span>
           </div>
 
           {lastError && (
-            <div className="rounded-md border border-rose-500/50 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+            <div className="border border-[rgba(255,92,92,0.45)] bg-[rgba(255,92,92,0.08)] px-3 py-2 text-xs text-[var(--signal)]">
               {lastError}
             </div>
           )}
@@ -195,27 +193,20 @@ export function StatusPanel({
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-slate-700 bg-slate-950 p-3">
-      <span className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+    <div className="surface p-3">
+      <span className="font-data text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--fog)]/55">
         {label}
       </span>
-      <p className="mt-1 text-lg font-semibold text-slate-100 tabular-nums">{value}</p>
+      <p className="mt-1 font-data text-lg font-semibold tabular-nums text-[#e8fff7]">
+        {value}
+      </p>
     </div>
   );
 }
 
-function getStatusColor(status: string) {
-  switch (status) {
-    case 'running':
-      return 'bg-emerald-400';
-    case 'starting':
-    case 'stopping':
-      return 'bg-amber-400';
-    case 'stopped':
-    case 'idle':
-      return 'bg-slate-600';
-    default:
-      return 'bg-slate-500';
-  }
+function getPulseState(status: string, connected: boolean) {
+  if (status === 'running') return 'online';
+  if (status === 'starting' || status === 'stopping') return 'warn';
+  if (!connected) return 'offline';
+  return 'offline';
 }
-

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  fetchAuthStatus,
   fetchCaptureInterfaces,
   fetchCaptureStatus,
   fetchSamplePlayback,
@@ -15,6 +16,7 @@ import { StatusPanel } from './components/StatusPanel';
 import { PacketTable } from './components/PacketTable';
 import { ProtocolChart } from './components/ProtocolChart';
 import { DiagnosticPanel } from './components/DiagnosticPanel';
+import { ApiKeyField } from './components/ApiKeyField';
 import type { PacketSummary } from '@/capture/types';
 
 const DEFAULT_INTERFACE = process.env.NEXT_PUBLIC_DEFAULT_INTERFACE ?? '';
@@ -35,6 +37,11 @@ export function LiveDashboard() {
   );
   const [useMock, setUseMock] = useState(true);
   const [isPlayingSample, setIsPlayingSample] = useState(false);
+
+  const authQuery = useQuery({
+    queryKey: ['auth-status'],
+    queryFn: fetchAuthStatus,
+  });
 
   const interfacesQuery = useQuery({
       queryKey: ['capture-interfaces'],
@@ -147,6 +154,9 @@ export function LiveDashboard() {
 
   return (
       <div className="grid gap-4">
+        <div className="max-w-md">
+          <ApiKeyField required={authQuery.data?.required ?? false} />
+        </div>
         <StatusPanel
           connected={connected}
           status={status}
@@ -210,12 +220,12 @@ function LatencyCard({ packets }: LatencyCardProps) {
   }, [packets]);
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg shadow-slate-950/50">
+    <div className="panel p-5">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium uppercase tracking-wide text-slate-400">
+        <h3 className="font-data text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--fog)]/65">
           Recent activity
         </h3>
-        <span className="text-xs text-slate-500">
+        <span className="font-data text-[10px] text-[var(--fog)]/50">
           {latest
             ? new Date(latest.timestampMs).toLocaleTimeString()
             : '—'}
@@ -254,8 +264,10 @@ function LatencyCard({ packets }: LatencyCardProps) {
 function MetricRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-xs text-slate-400">{label}</span>
-      <span className="text-sm font-semibold text-slate-100">{value}</span>
+      <span className="text-xs text-[var(--fog)]/65">{label}</span>
+      <span className="font-data text-sm font-semibold tabular-nums text-[#e8fff7]">
+        {value}
+      </span>
     </div>
   );
 }

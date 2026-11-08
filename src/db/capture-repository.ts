@@ -14,6 +14,7 @@ export interface CaptureSessionCreateInput {
   device: string;
   filter: string;
   mode: 'real' | 'mock';
+  ownerApiKey?: string | null;
   startedAt?: Date;
 }
 
@@ -39,6 +40,7 @@ export async function createCaptureSessionRecord(
       device: input.device,
       filter: input.filter,
       mode: mapMode(input.mode),
+      ownerApiKey: input.ownerApiKey ?? null,
       lifecycle: CaptureLifecycle.running,
       startedAt: input.startedAt ?? new Date(),
     },

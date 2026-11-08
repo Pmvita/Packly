@@ -1,12 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/db/client';
+import { authorizeCaptureRequest } from '@/server/auth/api-key';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = authorizeCaptureRequest(request);
+  if (!auth.ok) return auth.response;
+
   try {
     const sessions = await prisma.captureSession.findMany({
+      where: auth.ownerApiKey
+        ? { ownerApiKey: auth.ownerApiKey }
+        : undefined,
       orderBy: { startedAt: 'desc' },
       take: 50,
       select: {
@@ -36,4 +43,3 @@ export async function GET() {
     );
   }
 }
-

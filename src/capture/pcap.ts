@@ -86,7 +86,7 @@ function parseClassicPcapRecords(buffer: Buffer): PcapPacket[] {
   ) {
     throw new CaptureError(
       'PCAP_BAD_MAGIC',
-      'Not a classic pcap file (pcapng is not supported).'
+      'Unrecognized capture file magic (expected classic pcap or pcapng).'
     );
   }
 

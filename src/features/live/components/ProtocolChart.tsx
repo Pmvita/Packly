@@ -13,11 +13,12 @@ interface ProtocolChartProps {
 }
 
 const PROTOCOL_COLORS: Record<string, string> = {
-  tcp: '#38bdf8',
-  udp: '#c084fc',
-  icmp: '#fcd34d',
-  icmpv6: '#f59e0b',
-  unknown: '#94a3b8',
+  tcp: '#3DFFC8',
+  udp: '#A8C5BC',
+  icmp: '#F0A202',
+  icmpv6: '#F0A202',
+  unknown: '#6a8f84',
+  waiting: '#132420',
 };
 
 export function ProtocolChart({ protocols }: ProtocolChartProps) {
@@ -26,12 +27,15 @@ export function ProtocolChart({ protocols }: ProtocolChartProps) {
     : [{ protocol: 'waiting', percentage: 100, count: 0 }];
 
   return (
-    <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl shadow-slate-950/30">
-      <h3 className="text-lg font-semibold text-slate-100">
+    <div className="panel p-5">
+      <h3 className="font-display text-base font-semibold text-[#e8fff7]">
         Protocol distribution
       </h3>
-      <p className="text-xs uppercase tracking-wide text-slate-400">
-        Based on the last {protocols.length ? protocols.reduce((acc, item) => acc + item.count, 0) : 0}{' '}
+      <p className="font-data text-[10px] uppercase tracking-[0.14em] text-[var(--fog)]/60">
+        Based on the last{' '}
+        {protocols.length
+          ? protocols.reduce((acc, item) => acc + item.count, 0)
+          : 0}{' '}
         packets
       </p>
       <div className="mt-4 h-64">
@@ -55,11 +59,12 @@ export function ProtocolChart({ protocols }: ProtocolChartProps) {
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: '#020617',
-                borderRadius: '0.75rem',
-                border: '1px solid rgba(148, 163, 184, 0.2)',
-                color: '#e2e8f0',
-                fontSize: '0.75rem',
+                backgroundColor: '#071210',
+                borderRadius: '0',
+                border: '1px solid rgba(61, 255, 200, 0.14)',
+                color: '#A8C5BC',
+                fontSize: '0.7rem',
+                fontFamily: 'var(--font-ibm-plex-mono), monospace',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
               }}
@@ -69,8 +74,9 @@ export function ProtocolChart({ protocols }: ProtocolChartProps) {
               verticalAlign="bottom"
               formatter={(value) => value.toUpperCase()}
               wrapperStyle={{
-                color: '#94a3b8',
-                fontSize: '0.7rem',
+                color: '#A8C5BC',
+                fontSize: '0.65rem',
+                fontFamily: 'var(--font-ibm-plex-mono), monospace',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
               }}
@@ -81,4 +87,3 @@ export function ProtocolChart({ protocols }: ProtocolChartProps) {
     </div>
   );
 }
-

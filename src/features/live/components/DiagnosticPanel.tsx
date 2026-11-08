@@ -35,30 +35,32 @@ export function DiagnosticPanel({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg shadow-slate-950/50">
+    <div className="panel p-5">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm font-medium uppercase tracking-wide text-slate-400">
+        <h3 className="font-data text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--fog)]/65">
           Diagnostic report
         </h3>
-        <span className="text-xs text-slate-500">
+        <span className="font-data text-[10px] text-[var(--fog)]/50">
           {report.findings.length} finding
           {report.findings.length === 1 ? '' : 's'}
         </span>
       </div>
-      <p className="mt-3 text-sm text-slate-200">{report.summary}</p>
+      <p className="mt-3 text-sm text-[#e8fff7]">{report.summary}</p>
       <ul className="mt-3 space-y-2">
         {report.findings.length === 0 ? (
-          <li className="text-xs text-slate-500">No scan/RST/SYN thresholds crossed.</li>
+          <li className="text-xs text-[var(--fog)]/50">
+            No scan/RST/SYN thresholds crossed.
+          </li>
         ) : (
           report.findings.map((finding) => (
             <li
               key={`${finding.check}-${finding.detail}`}
-              className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2 text-xs text-slate-200"
+              className="surface px-3 py-2 text-xs text-[#e8fff7]"
             >
-              <span className="font-semibold text-amber-300">
+              <span className="font-semibold text-[var(--warn)]">
                 [{finding.severity}] {finding.check}
               </span>
-              <p className="mt-1 text-slate-400">{finding.detail}</p>
+              <p className="mt-1 text-[var(--fog)]/70">{finding.detail}</p>
             </li>
           ))
         )}
@@ -68,7 +70,7 @@ export function DiagnosticPanel({
           type="button"
           onClick={handleExport}
           disabled={packets.length === 0}
-          className="rounded-full border border-slate-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:border-slate-800 disabled:text-slate-600"
+          className="btn-ghost !px-3 !py-1.5 text-xs uppercase tracking-wide"
         >
           Export report
         </button>
@@ -76,14 +78,14 @@ export function DiagnosticPanel({
           type="button"
           onClick={onPlaySample}
           disabled={isPlayingSample}
-          className="rounded-full border border-slate-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:border-slate-800 disabled:text-slate-600"
+          className="btn-ghost !px-3 !py-1.5 text-xs uppercase tracking-wide"
         >
           {isPlayingSample ? 'Loading sample…' : 'Play sample PCAP'}
         </button>
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="rounded-full border border-slate-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-emerald-400 hover:text-emerald-200"
+          className="btn-ghost !px-3 !py-1.5 text-xs uppercase tracking-wide"
         >
           Open PCAP
         </button>

@@ -44,6 +44,8 @@ model CaptureSession {
   mode         CaptureMode
   lifecycle    CaptureLifecycle @default(idle)
   errorMessage String?
+  /// SHA-256 prefix of the API key that started this session (ownership scope).
+  ownerApiKey  String?
   startedAt    DateTime         @default(now())
   endedAt      DateTime?
   packetCount  Int              @default(0)
@@ -57,6 +59,7 @@ model CaptureSession {
   summaries    TrafficSummary[]
 
   @@index([device, startedAt])
+  @@index([ownerApiKey, startedAt])
 }
 
 model Flow {

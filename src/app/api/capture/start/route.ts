@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorizeCaptureRequest } from '@/server/auth/api-key';
 import { getCaptureManager } from '@/server/capture/manager';
 
 export const runtime = 'nodejs';
@@ -58,6 +59,9 @@ function parsePayload(body: unknown): StartCapturePayload {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = authorizeCaptureRequest(request);
+  if (!auth.ok) return auth.response;
+
   if (!checkRateLimit()) {
     return NextResponse.json(
       { error: 'Rate limit exceeded', details: 'Too many capture start requests.' },
@@ -78,7 +82,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const state = await manager.start(payload);
+    const state = await manager.start({
+      ...payload,
+      ownerApiKey: auth.ownerApiKey,
+    });
     return NextResponse.json(state, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -90,4 +97,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

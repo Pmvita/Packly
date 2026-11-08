@@ -65,9 +65,30 @@ Build list: [`TODO.md`](./TODO.md).
 
 Packly is a full-stack packet inspector: capture frames with libpcap, decode protocol stacks, persist flows in PostgreSQL, and visualise everything from a Next.js dashboard. Capture utilities, APIs, background jobs, and UI all live in one codebase so you can iterate quickly and still deploy with confidence.
 
+## Design
+
+Packly uses a dark phosphor radar ops aesthetic:
+
+| Token | Value |
+|-------|-------|
+| Display / brand | **Syne** (`next/font/google`) |
+| Tables / data | **IBM Plex Mono** |
+| `--ink` | `#071210` |
+| `--panel` | `#0E1A18` |
+| `--surface` | `#132420` |
+| `--phosphor` | `#3DFFC8` |
+| `--warn` | `#F0A202` |
+| `--signal` | `#FF5C5C` |
+| `--fog` | `#A8C5BC` |
+| `--line` | `rgba(61,255,200,0.14)` |
+
+Motion: live status pulse on capture indicators, staggered row fade-in on packet/history tables, phosphor underline/hover on nav links (respects `prefers-reduced-motion`).
+
+**Refs:** [21st.dev](https://21st.dev) Streaming Data Rows / InlineAnalyticsTable pattern inspiration (dense live tables); [Context.dev](https://context.dev) linear.app density/spacing rhythm (not Inter fonts). **Mobbin:** unavailable (paid plan) — no Mobbin refs applied.
+
 ## Architecture note
 
-Packly is a **web app + server-side capture engine**, not a desktop app. The browser only renders results; packet sniffing runs in the Node process on the host (which needs NIC privileges). That's why deployment uses Docker/VM rather than Vercel. A desktop wrapper (Electron/Tauri) is possible but not included — the web UI keeps it multi-user and remotely accessible.
+Packly is a **web app + server-side capture engine**, not a desktop app. The browser only renders results; packet sniffing runs in the Node process on the host (which needs NIC privileges). **Full capture needs Docker/VM with NIC privileges** — not a serverless-only host. A marketing/UI preview may deploy to Vercel (`https://packly-gold.vercel.app`), but live sniffing, Socket.IO capture, and Postgres persistence are intended for Docker Compose (see below).
 
 ## Highlights
 
