@@ -1,5 +1,9 @@
-import type { PacketHeader } from 'cap';
-import { PacketSummary, TransportProtocol, TcpFlags } from './types';
+import {
+  PacketHeader,
+  PacketSummary,
+  TransportProtocol,
+  TcpFlags,
+} from './types';
 
 const ETH_HEADER_LENGTH = 14;
 const IPV4_ETHER_TYPE = 0x0800;

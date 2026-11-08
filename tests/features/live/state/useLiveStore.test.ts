@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { useLiveStore } from '@/features/live/state/useLiveStore';
-import type { PacketSummary } from '@/capture';
+import type { PacketSummary } from '@/capture/types';
 
 const createPacket = (overrides: Partial<PacketSummary> = {}): PacketSummary => ({
   timestampMs: Date.now(),
@@ -19,6 +19,7 @@ afterEach(() => {
     connected: false,
     lastError: null,
     packets: [],
+    packetSource: 'live',
     maxPackets: 200,
   });
 });
@@ -52,6 +53,18 @@ describe('useLiveStore', () => {
     expect(packets).toHaveLength(maxPackets);
     expect(packets[0].timestampMs).toBe(50); // older packets trimmed
     expect(packets[packets.length - 1].timestampMs).toBe(maxPackets + 49);
+  });
+
+  it('keeps pcap playback packets when capture is idle', () => {
+    const setPackets = useLiveStore.getState().setPackets;
+    const setStatus = useLiveStore.getState().setStatus;
+    setPackets([createPacket({ timestampMs: 1 })]);
+    setStatus({
+      status: 'idle',
+      mode: 'unknown',
+      metrics: { totalPackets: 0, mode: 'unknown' },
+    });
+    expect(useLiveStore.getState().packets).toHaveLength(1);
   });
 });
 

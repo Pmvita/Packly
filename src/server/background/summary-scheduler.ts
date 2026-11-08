@@ -1,4 +1,4 @@
-import { CaptureLifecycle } from '@/generated/prisma';
+import { CaptureLifecycle } from '@/generated/prisma/client';
 import { prisma } from '@/db/client';
 import { createTrafficSummary } from '@/db/capture-repository';
 import { logger } from '@/observability/logger';

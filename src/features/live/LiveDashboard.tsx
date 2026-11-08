@@ -5,14 +5,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchCaptureInterfaces,
   fetchCaptureStatus,
+  fetchSamplePlayback,
   startCapture,
   stopCapture,
+  uploadPcapPlayback,
 } from './api';
 import { useLiveStore } from './state/useLiveStore';
 import { StatusPanel } from './components/StatusPanel';
 import { PacketTable } from './components/PacketTable';
 import { ProtocolChart } from './components/ProtocolChart';
-import type { PacketSummary } from '@/capture';
+import { DiagnosticPanel } from './components/DiagnosticPanel';
+import type { PacketSummary } from '@/capture/types';
 
 const DEFAULT_INTERFACE = process.env.NEXT_PUBLIC_DEFAULT_INTERFACE ?? '';
 
@@ -24,12 +27,14 @@ export function LiveDashboard() {
   const lastError = useLiveStore((state) => state.lastError);
   const setStatus = useLiveStore((state) => state.setStatus);
   const setLastError = useLiveStore((state) => state.setLastError);
+  const setPackets = useLiveStore((state) => state.setPackets);
 
   const [selectedInterface, setSelectedInterface] = useState<string>('');
   const [filter, setFilter] = useState<string>(
     process.env.NEXT_PUBLIC_DEFAULT_FILTER ?? 'tcp'
   );
-  const [useMock, setUseMock] = useState(false);
+  const [useMock, setUseMock] = useState(true);
+  const [isPlayingSample, setIsPlayingSample] = useState(false);
 
   const interfacesQuery = useQuery({
     queryKey: ['capture-interfaces'],
@@ -95,12 +100,13 @@ export function LiveDashboard() {
   }, [packets]);
 
   const handleStartCapture = () => {
-    if (!selectedInterface) {
+    const device = useMock ? selectedInterface || 'mock0' : selectedInterface;
+    if (!device) {
       setLastError('Select a network interface to start capturing.');
       return;
     }
     startMutation.mutate({
-      device: selectedInterface,
+      device,
       filter,
       useMock,
     });
@@ -108,6 +114,27 @@ export function LiveDashboard() {
 
   const handleStopCapture = () => {
     stopMutation.mutate();
+  };
+
+  const applyPlayback = async (loader: () => ReturnType<typeof fetchSamplePlayback>) => {
+    setIsPlayingSample(true);
+    try {
+      const playback = await loader();
+      setPackets(playback.packets);
+      setLastError(null);
+    } catch (error) {
+      setLastError((error as Error).message ?? 'Failed to load pcap');
+    } finally {
+      setIsPlayingSample(false);
+    }
+  };
+
+  const handlePlaySample = () => {
+    void applyPlayback(fetchSamplePlayback);
+  };
+
+  const handleUploadPcap = (file: File) => {
+    void applyPlayback(() => uploadPcapPlayback(file));
   };
 
   return (
@@ -141,6 +168,12 @@ export function LiveDashboard() {
         </div>
         <div className="lg:col-span-4 flex flex-col gap-6">
           <ProtocolChart protocols={protocolSummary} />
+          <DiagnosticPanel
+            packets={packets}
+            isPlayingSample={isPlayingSample}
+            onPlaySample={handlePlaySample}
+            onUploadPcap={handleUploadPcap}
+          />
           <LatencyCard packets={packets} />
         </div>
       </div>

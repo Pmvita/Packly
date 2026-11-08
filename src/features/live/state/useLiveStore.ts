@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import type { PacketSummary } from '@/capture';
+import type { PacketSummary } from '@/capture/types';
 import type { CaptureManagerState } from '@/server/capture/manager';
 
 interface LiveState {
@@ -9,10 +9,12 @@ interface LiveState {
   connected: boolean;
   lastError: string | null;
   packets: PacketSummary[];
+  packetSource: 'live' | 'pcap';
   maxPackets: number;
   setConnected: (value: boolean) => void;
   setStatus: (status: CaptureManagerState) => void;
   addPacket: (packet: PacketSummary) => void;
+  setPackets: (packets: PacketSummary[]) => void;
   setLastError: (message: string | null) => void;
   clearPackets: () => void;
 }
@@ -24,12 +26,14 @@ export const useLiveStore = create<LiveState>((set) => ({
   connected: false,
   lastError: null,
   packets: [],
+  packetSource: 'live',
   maxPackets: MAX_PACKET_HISTORY,
   setConnected: (value) => set({ connected: value }),
   setStatus: (status) =>
     set((state) => {
       const shouldClear =
-        status.status === 'stopped' || status.status === 'idle';
+        state.packetSource === 'live' &&
+        (status.status === 'stopped' || status.status === 'idle');
       return {
         status,
         packets: shouldClear ? [] : state.packets,
@@ -42,9 +46,13 @@ export const useLiveStore = create<LiveState>((set) => ({
       if (next.length > state.maxPackets) {
         next.splice(0, next.length - state.maxPackets);
       }
-      return { packets: next };
+      return { packets: next, packetSource: 'live' };
     }),
+  setPackets: (packets) =>
+    set((state) => ({
+      packets: packets.slice(-state.maxPackets),
+      packetSource: 'pcap',
+    })),
   setLastError: (message) => set({ lastError: message }),
-  clearPackets: () => set({ packets: [] }),
+  clearPackets: () => set({ packets: [], packetSource: 'live' }),
 }));
-

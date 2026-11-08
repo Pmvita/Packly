@@ -4,6 +4,21 @@ import { getCaptureManager } from '@/server/capture/manager';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// Simple in-memory rate limiter for capture start (per process).
+const startTimestamps: number[] = [];
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 5;
+
+function checkRateLimit(): boolean {
+  const now = Date.now();
+  while (startTimestamps.length && now - startTimestamps[0] > RATE_LIMIT_WINDOW_MS) {
+    startTimestamps.shift();
+  }
+  if (startTimestamps.length >= RATE_LIMIT_MAX) return false;
+  startTimestamps.push(now);
+  return true;
+}
+
 interface StartCapturePayload {
   device?: string;
   filter?: string;
@@ -43,6 +58,12 @@ function parsePayload(body: unknown): StartCapturePayload {
 }
 
 export async function POST(request: NextRequest) {
+  if (!checkRateLimit()) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded', details: 'Too many capture start requests.' },
+      { status: 429 }
+    );
+  }
   const manager = getCaptureManager();
   let payload: StartCapturePayload = {};
   try {

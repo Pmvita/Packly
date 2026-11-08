@@ -1,7 +1,7 @@
 import {
   CaptureLifecycle,
   type CaptureSession,
-} from '@/generated/prisma';
+} from '@/generated/prisma/client';
 import {
   completeCaptureSessionRecord,
   createCaptureSessionRecord,

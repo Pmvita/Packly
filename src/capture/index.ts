@@ -4,4 +4,6 @@ export * from './interfaces';
 export * from './parsers';
 export * from './session';
 export * from './mock';
+export * from './pcap';
+export * from './sample-pcap';
 

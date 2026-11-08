@@ -136,7 +136,7 @@ export function StatusPanel({
               onChange={(event) => onToggleMock(event.target.checked)}
               className="h-4 w-4 rounded border-slate-600 text-emerald-400 focus:ring-emerald-400"
             />
-            Use mock capture (generate synthetic packets)
+            Use mock capture (default on Windows — Npcap is optional)
           </label>
         </div>
         <div className="lg:col-span-7 space-y-5">
@@ -163,7 +163,7 @@ export function StatusPanel({
             <button
               type="button"
               onClick={onStartCapture}
-              disabled={isStarting || !selectedInterface}
+              disabled={isStarting || (!useMock && !selectedInterface)}
               className="inline-flex items-center rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-emerald-950 shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-emerald-700/40 disabled:text-emerald-200"
             >
               {isStarting ? 'Starting…' : 'Start capture'}

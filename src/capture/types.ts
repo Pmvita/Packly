@@ -1,5 +1,3 @@
-import type { PacketHeader } from 'cap';
-
 export type TransportProtocol =
   | 'tcp'
   | 'udp'
@@ -54,6 +52,15 @@ export interface TransportHeader {
   dstPort?: number;
   flags?: TcpFlags;
   payloadLength?: number;
+}
+
+export interface PacketHeader {
+  seconds: number;
+  nanoseconds: number;
+  timestampSeconds?: number;
+  timestampMicroseconds?: number;
+  caplen: number;
+  len: number;
 }
 
 export interface PacketSummary {

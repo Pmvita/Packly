@@ -6,7 +6,7 @@ import {
   Packet,
   Prisma,
   Protocol,
-} from '@/generated/prisma';
+} from '@/generated/prisma/client';
 import type { PacketSummary, TransportProtocol } from '@/capture';
 
 export interface CaptureSessionCreateInput {

@@ -1,5 +1,12 @@
 # Packly
 
+**v2 in `4) Security`:** keep the v1 dashboard, add a **diagnostic report** from decoded packets (protocol counts, port-spread, RST burst, SYN volume). Mock capture is the default demo. Sample / uploaded PCAP playback does not need Npcap.
+
+On Windows: `npm install` may warn that optional `cap` failed to compile. Ignore it. Use **Use mock capture** or **Play sample PCAP**. Npcap + Python are only required for live NIC sniffing.
+
+Build list: [`TODO.md`](./TODO.md).
+
+
 <div align="center">
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/Pmvita/packly?style=for-the-badge&logo=github&logoColor=white)
@@ -85,8 +92,8 @@ See `docs/architecture.md` for component responsibilities and data-flow diagrams
 |-------------|-------|
 | **Node.js 20+** | Development and CI use Node 20. |
 | **npm** | Included with Node (lockfile is `package-lock.json`). |
-| **libpcap** | Required by the `cap` binding.<br/>macOS: `brew install libpcap`<br/>Ubuntu/Debian: `sudo apt-get install libpcap-dev`<br/>Fedora: `sudo dnf install libpcap-devel` |
-| **Packet capture privileges** | macOS: `sudo dseditgroup -o edit -a $(whoami) -t user access_bpf` then log out/in.<br/>Linux: run the app with `CAP_NET_ADMIN` or via `sudo setcap cap_net_admin=eip $(which node)`. |
+| **libpcap / Npcap** | **Optional.** Live NIC capture uses the `cap` binding. Windows demo path is mock packets or a `.pcap` file. macOS: `brew install libpcap`. Ubuntu/Debian: `sudo apt-get install libpcap-dev`. |
+| **Packet capture privileges** | Only for live sniffing. macOS: `sudo dseditgroup -o edit -a $(whoami) -t user access_bpf` then log out/in. Linux: `CAP_NET_ADMIN`. |
 
 ## Quick start
 
@@ -105,7 +112,7 @@ npm run prisma:generate
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) and use the dashboard to select a NIC, configure BPF filters, and start/stop captures. Enable **“Use mock capture”** to exercise the UI without root privileges or libpcap installed.
+Visit [http://localhost:3000](http://localhost:3000). **Use mock capture** is on by default. Start a session, then **Export report** for markdown findings, or **Play sample PCAP** / **Open PCAP** to decode a file without Npcap.
 
 ## Environment variables
 
@@ -146,6 +153,8 @@ GitHub Actions (`.github/workflows/ci.yml`) runs `npm run lint` and `npm run tes
 | `/api/capture/start` | `POST` | Start a capture session (`device`, `filter`, `useMock`, etc.). |
 | `/api/capture/stop` | `POST` | Stop the running capture session. |
 | `/api/capture/history` | `GET` | Placeholder (501) until historical queries ship. |
+| `/api/capture/playback` | `GET` | Bundled scan-like sample → packets + diagnostic markdown. |
+| `/api/capture/playback` | `POST` | Upload a classic Ethernet `.pcap` (2 MB max). |
 | `/api/socket` | `Socket.IO` | Realtime stream (status + packets + errors). |
 | `/api/metrics` | `GET` | Prometheus metrics (Pino logs note status transitions). |
 
@@ -210,7 +219,9 @@ tests/               # Vitest suites
 - [x] Metrics, logging, Prometheus-exporting endpoint.
 - [x] Vitest suites + CI pipeline.
 - [x] Dockerfile & Compose setup.
-- [ ] Historical queries & playback UI.
+- [x] Diagnostic markdown report (port-spread / RST / SYN).
+- [x] Sample + uploaded PCAP playback (classic pcap, Ethernet).
+- [ ] Historical queries against PostgreSQL.
 - [ ] Authentication / RBAC for multi-user deployments.
 - [ ] Alerting rules & webhook integrations.
 

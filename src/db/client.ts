@@ -1,4 +1,4 @@
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma/client';
 
 type GlobalWithPrisma = typeof globalThis & {
   __packlyPrisma?: PrismaClient;

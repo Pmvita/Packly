@@ -64,3 +64,35 @@ export async function stopCapture(): Promise<CaptureManagerState> {
   return handleResponse(response);
 }
 
+export interface PlaybackResponse {
+  packetCount: number;
+  packets: import('@/capture/types').PacketSummary[];
+  markdown: string;
+  report: {
+    packetCount: number;
+    protocolCounts: Record<string, number>;
+    summary: string;
+    findings: Array<{
+      check: string;
+      severity: string;
+      detail: string;
+    }>;
+  };
+}
+
+export async function fetchSamplePlayback(): Promise<PlaybackResponse> {
+  const response = await fetch('/api/capture/playback', { cache: 'no-store' });
+  return handleResponse(response);
+}
+
+export async function uploadPcapPlayback(
+  file: File
+): Promise<PlaybackResponse> {
+  const response = await fetch('/api/capture/playback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/vnd.tcpdump.pcap' },
+    body: file,
+  });
+  return handleResponse(response);
+}
+

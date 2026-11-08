@@ -1,11 +1,11 @@
 import { EventEmitter, on } from 'events';
 import { Buffer } from 'buffer';
-import { Cap, type PacketHeader } from 'cap';
 import {
   CaptureConfig,
   CaptureError,
   CaptureOptions,
   CaptureStatus,
+  PacketHeader,
   PacketSummary,
   RawPacket,
 } from './types';
@@ -34,7 +34,7 @@ export class CaptureSession {
     droppedPackets: 0,
   };
 
-  private capInstance: Cap | null = null;
+  private capInstance: NativeCap | null = null;
   private buffer: Buffer | null = null;
   private status: CaptureStatus = 'idle';
   private linkType: number | null = null;
@@ -107,13 +107,13 @@ export class CaptureSession {
       );
     }
 
-    let cap: Cap;
+    let cap: NativeCap;
     try {
-      cap = new Cap();
+      cap = createNativeCap();
     } catch (error) {
       throw new CaptureError(
         'CAPTURE_MODULE_LOAD_FAILED',
-        'Failed to initialize native capture binding. Ensure libpcap is installed and accessible.',
+        'Failed to initialize native capture binding. On Windows use mock capture or install Npcap; libpcap is optional.',
         { cause: error as Error }
       );
     }
@@ -226,6 +226,43 @@ function tryParsePacket(buffer: Buffer, header: PacketHeader): PacketSummary {
     );
   }
   return parsePacketSummary(buffer, header);
+}
+
+type NativeCap = {
+  open: (
+    device: string,
+    filter: string,
+    bufferSize: number,
+    buffer: Buffer,
+    snapLength?: number
+  ) => number;
+  setMinBytesForRead: (minBytes: number) => void;
+  close: () => void;
+  on(
+    event: 'packet',
+    listener: (
+      nbytes: number,
+      trunc: boolean,
+      rawBuffer: Buffer,
+      header: PacketHeader
+    ) => void
+  ): void;
+  on(event: 'close', listener: () => void): void;
+};
+
+function createNativeCap(): NativeCap {
+  try {
+    // Optional native binding — missing on Windows without Npcap/Python.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { Cap } = require('cap') as { Cap: new () => NativeCap };
+    return new Cap();
+  } catch (error) {
+    throw new CaptureError(
+      'CAPTURE_MODULE_LOAD_FAILED',
+      'Native capture binding is not installed. Use mock capture or sample PCAP playback.',
+      { cause: error as Error }
+    );
+  }
 }
 
 export function createCaptureSession(options: CaptureOptions = {}) {
