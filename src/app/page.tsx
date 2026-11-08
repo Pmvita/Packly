@@ -8,6 +8,14 @@ export default function Home() {
 
       <section className="relative flex flex-1 flex-col justify-center px-6 py-20">
         <div className="mx-auto w-full max-w-5xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/packly-mark.jpg"
+            alt=""
+            width={72}
+            height={72}
+            className="mb-6 h-[72px] w-[72px] border border-[var(--line)] object-cover"
+          />
           <p className="font-display text-5xl font-extrabold tracking-tight text-[var(--phosphor)] sm:text-7xl md:text-8xl">
             Packly
           </p>

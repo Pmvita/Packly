@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 interface SiteHeaderProps {
@@ -10,8 +11,16 @@ export function SiteHeader({ current }: SiteHeaderProps) {
       <div className="mx-auto flex max-w-6xl items-center justify-between">
         <Link
           href="/"
-          className="font-display text-sm font-semibold tracking-wide text-[var(--phosphor)]"
+          className="flex items-center gap-2.5 font-display text-sm font-semibold tracking-wide text-[var(--phosphor)]"
         >
+          <Image
+            src="/packly-mark.jpg"
+            alt=""
+            width={28}
+            height={28}
+            className="h-7 w-7 border border-[var(--line)] object-cover"
+            priority
+          />
           Packly
         </Link>
         <nav className="flex gap-6 text-sm">

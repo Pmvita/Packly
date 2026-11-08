@@ -143,22 +143,33 @@ Visit [http://localhost:3000](http://localhost:3000). **Use mock capture** is on
 
 ## Environment variables
 
-All configuration loads from `.env.local` or the container environment. Key entries:
+Copy the template — do **not** commit secrets:
 
-| Variable | Purpose |
-|----------|---------|
-| `DATABASE_URL` | PostgreSQL connection string. |
-| `CAPTURE_INTERFACE` | Default interface when the UI first loads (e.g. `en0`, `eth0`). |
-| `CAPTURE_FILTER` | Default BPF filter (`tcp`, `tcp port 80`, etc.). |
-| `CAPTURE_PROMISCUOUS` | Enable promiscuous mode (default `true`). |
-| `SUMMARY_ROLLUP_INTERVAL_MINUTES` | Interval for background traffic summaries. |
-| `PACKET_TTL_DAYS` | Delete persisted packets older than N days (default `30`). |
-| `PACKET_TTL_CLEANUP_INTERVAL_HOURS` | How often the TTL job runs (default `6`). |
-| `PACKLY_API_KEY` | When set, required for start/stop/history via `X-API-Key` or `Authorization: Bearer`. |
-| `SOCKET_IO_PATH` / `NEXT_PUBLIC_SOCKET_PATH` | Socket.IO handshake path (defaults to `/api/socket`). |
-| `NEXT_PUBLIC_DEFAULT_INTERFACE`, `NEXT_PUBLIC_DEFAULT_FILTER` | Client defaults for the dashboard. |
+```bash
+cp .env.example .env.local
+```
 
-The repository also creates a placeholder `.env` file (intentionally empty) to signal that secrets belong in `.env.local`.
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `DATABASE_URL` | Yes (persistence) | PostgreSQL connection string. |
+| `CAPTURE_INTERFACE` | No | Default NIC when the UI first loads (e.g. `en0`, `eth0`). |
+| `CAPTURE_FILTER` | No | Default BPF filter (`tcp`, `tcp port 80`, etc.). |
+| `CAPTURE_PROMISCUOUS` | No | Promiscuous mode (default `true`). |
+| `PACKLY_CAPTURE_FALLBACK_TO_MOCK` | No | Fall back to mock when live capture fails (default `true`). |
+| `SUMMARY_ROLLUP_INTERVAL_MINUTES` | No | Background traffic summary interval. |
+| `PACKET_TTL_DAYS` | No | Delete persisted packets older than N days (default `30`). |
+| `PACKET_TTL_CLEANUP_INTERVAL_HOURS` | No | How often the TTL job runs (default `6`). |
+| `PACKLY_API_KEY` | Optional | When set, required for start/stop/history via `X-API-Key` or `Authorization: Bearer`. |
+| `SOCKET_IO_PATH` / `NEXT_PUBLIC_SOCKET_PATH` | No | Socket.IO handshake path (defaults to `/api/socket`). |
+| `NEXT_PUBLIC_DEFAULT_INTERFACE`, `NEXT_PUBLIC_DEFAULT_FILTER` | No | Client defaults for the dashboard. |
+
+### Vercel (UI preview only)
+
+Project is linked (`.vercel/`). A marketing/UI preview can ship to Vercel, but:
+
+- Live NIC capture, Socket.IO capture sessions, and Prisma persistence need a host with Postgres + privileges (Docker Compose / VM) — **not** serverless-only.
+- Set env in the Vercel dashboard from `.env.example` keys; leave `PACKLY_API_KEY` empty unless you intentionally gate the preview APIs.
+- Prefer mock / sample PCAP modes on the preview deploy. Do not expect `DATABASE_URL` or Npcap to work on the free Vercel runtime without an external DB + long-running process.
 
 ## Key commands
 
