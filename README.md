@@ -65,6 +65,10 @@ Build list: [`TODO.md`](./TODO.md).
 
 Packly is a full-stack packet inspector: capture frames with libpcap, decode protocol stacks, persist flows in PostgreSQL, and visualise everything from a Next.js dashboard. Capture utilities, APIs, background jobs, and UI all live in one codebase so you can iterate quickly and still deploy with confidence.
 
+## Architecture note
+
+Packly is a **web app + server-side capture engine**, not a desktop app. The browser only renders results; packet sniffing runs in the Node process on the host (which needs NIC privileges). That's why deployment uses Docker/VM rather than Vercel. A desktop wrapper (Electron/Tauri) is possible but not included — the web UI keeps it multi-user and remotely accessible.
+
 ## Highlights
 
 - **Real-time capture pipeline** powered by `cap`, `Socket.IO`, and a resilient capture manager with mock fallback for development.
