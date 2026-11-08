@@ -1,0 +1,3 @@
+{
+  "buildCommand": "DATABASE_URL=postgresql://x:x@localhost:5432/x npm run prisma:generate && npm run build"
+}

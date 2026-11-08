@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchCaptureInterfaces,
@@ -37,28 +37,33 @@ export function LiveDashboard() {
   const [isPlayingSample, setIsPlayingSample] = useState(false);
 
   const interfacesQuery = useQuery({
-    queryKey: ['capture-interfaces'],
-    queryFn: fetchCaptureInterfaces,
-    onSuccess: (data) => {
-      setSelectedInterface((current) => {
-        if (current) return current;
-        return (
-          data.find((item) => item.name === DEFAULT_INTERFACE)?.name ??
-          data[0]?.name ??
-          ''
-        );
-      });
-    },
-  });
+      queryKey: ['capture-interfaces'],
+      queryFn: fetchCaptureInterfaces,
+    });
 
-  useQuery({
-    queryKey: ['capture-status'],
-    queryFn: fetchCaptureStatus,
-    enabled: !status,
-    onSuccess: (data) => {
-      setStatus(data);
-    },
-  });
+    useEffect(() => {
+      if (interfacesQuery.data) {
+        setSelectedInterface((current) => {
+          if (current) return current;
+          return (
+            interfacesQuery.data.find((item) => item.name === DEFAULT_INTERFACE)
+              ?.name ??
+            interfacesQuery.data[0]?.name ??
+            ''
+          );
+        });
+      }
+    }, [interfacesQuery.data]);
+
+    const statusQuery = useQuery({
+      queryKey: ['capture-status'],
+      queryFn: fetchCaptureStatus,
+      enabled: !status,
+    });
+
+    useEffect(() => {
+      if (statusQuery.data) setStatus(statusQuery.data);
+    }, [statusQuery.data, setStatus]);
 
   const startMutation = useMutation({
     mutationFn: startCapture,

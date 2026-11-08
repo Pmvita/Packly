@@ -215,17 +215,17 @@ class CaptureManager extends EventEmitter {
   private bindSessionEvents(session: ManagedSession) {
     if (this.listenersBound) return;
 
-    session.on('packet', this.handlePacket);
-    session.on('status', this.handleStatus);
-    session.on('error', this.handleError);
+    (session as any).on('packet', this.handlePacket);
+        (session as any).on('status', this.handleStatus);
+        (session as any).on('error', this.handleError);
     this.listenersBound = true;
   }
 
   private unbindSessionEvents(session: ManagedSession) {
     if (!this.listenersBound) return;
-    session.off('packet', this.handlePacket);
-    session.off('status', this.handleStatus);
-    session.off('error', this.handleError);
+    (session as any).off('packet', this.handlePacket);
+        (session as any).off('status', this.handleStatus);
+        (session as any).off('error', this.handleError);
     this.listenersBound = false;
   }
 

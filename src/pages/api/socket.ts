@@ -46,9 +46,9 @@ export default async function handler(
     });
     res.socket.server.io = io;
 
-    if (!globalForSocket.__packlySocketInitialised__) {
-      setupCaptureBroadcast(io);
-      globalForSocket.__packlySocketInitialised__ = true;
+    if (!globalForSocket.__packlySocketInitialised) {
+          setupCaptureBroadcast(io);
+          globalForSocket.__packlySocketInitialised = true;
       logger.info('[Packly] Socket.IO server initialised');
     }
   }

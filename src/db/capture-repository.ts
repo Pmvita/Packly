@@ -119,8 +119,8 @@ export async function createTrafficSummary(
     update: {
       packetCount: data.packetCount,
       byteCount: data.byteCount,
-      topTalkers: data.topTalkers,
-      protocolBreakdown: data.protocolBreakdown,
+      topTalkers: data.topTalkers as Prisma.InputJsonValue,
+            protocolBreakdown: data.protocolBreakdown as Prisma.InputJsonValue,
     },
     create: {
       sessionId,
@@ -128,8 +128,8 @@ export async function createTrafficSummary(
       intervalEnd: data.intervalEnd,
       packetCount: data.packetCount,
       byteCount: data.byteCount,
-      topTalkers: data.topTalkers,
-      protocolBreakdown: data.protocolBreakdown,
+      topTalkers: data.topTalkers as Prisma.InputJsonValue,
+            protocolBreakdown: data.protocolBreakdown as Prisma.InputJsonValue,
     },
   });
 }
@@ -159,15 +159,15 @@ async function ensureFlow(
   } as const;
 
   const existing = await tx.flow.findUnique({
-    where: uniqueWhere,
-  });
+      where: uniqueWhere as any,
+    });
 
   const now = new Date(packet.timestampMs);
   const byteCount = BigInt(packet.originalLength);
 
   if (existing) {
     const updated = await tx.flow.update({
-      where: uniqueWhere,
+        where: uniqueWhere as any,
       data: {
         lastSeenAt: now,
         packetCount: { increment: 1 },
@@ -220,9 +220,9 @@ function mapPacketData(
     hopLimit: packet.network?.hopLimit ?? null,
     payloadLength: packet.transport?.payloadLength ?? null,
     tcpFlags: packet.transport?.flags
-      ? (packet.transport.flags as unknown as Prisma.JsonValue)
-      : Prisma.JsonNull,
-    rawPayload: options.rawPayload ?? undefined,
+          ? (packet.transport.flags as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+    rawPayload: options.rawPayload ? (options.rawPayload as unknown as Uint8Array<ArrayBuffer>) : undefined,
   };
 }
 
