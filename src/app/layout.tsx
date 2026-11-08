@@ -17,6 +17,15 @@ export const metadata: Metadata = {
   title: 'Packly | Packet Inspector',
   description:
     'Capture, decode, and visualise network traffic with a Next.js-based dashboard.',
+  openGraph: {
+    title: 'Packly | Packet Inspector',
+    description: 'Capture, decode, and visualise network traffic.',
+    url: 'https://packly-gold.vercel.app',
+    siteName: 'Packly',
+    images: [{ url: '/og.png', width: 1200, height: 630 }],
+    type: 'website',
+  },
+  twitter: { card: 'summary_large_image', title: 'Packly | Packet Inspector' },
 };
 
 export default function RootLayout({
