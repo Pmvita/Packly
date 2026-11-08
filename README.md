@@ -1,8 +1,14 @@
 # Packly
 
+**Live demo:** [https://packly-gold.vercel.app](https://packly-gold.vercel.app)
+
 **v2 in `4) Security`:** keep the v1 dashboard, add a **diagnostic report** from decoded packets (protocol counts, port-spread, RST burst, SYN volume). Mock capture is the default demo. Sample / uploaded PCAP playback does not need Npcap.
 
 On Windows: `npm install` may warn that optional `cap` failed to compile. Ignore it. Use **Use mock capture** or **Play sample PCAP**. Npcap + Python are only required for live NIC sniffing.
+
+### Vercel vs local / Docker
+
+The **web UI** (landing, dashboard, history, PCAP playback, diagnostic export) deploys to Vercel. **Live NIC capture** needs a long-lived Node process with libpcap/Npcap privileges — that path runs **locally or via Docker Compose**, not on serverless. On Vercel you can still demo history/dashboard UI and file-based playback; set `PACKLY_API_KEY` to protect start/stop/history.
 
 Build list: [`TODO.md`](./TODO.md).
 
@@ -191,13 +197,13 @@ GitHub Actions (`.github/workflows/ci.yml`) runs `npm run lint` and `npm run tes
 |----------|--------|-------------|
 | `/api/capture/interfaces` | `GET` | Enumerate capture-capable network interfaces. |
 | `/api/capture/status` | `GET` | Current capture manager state & metrics. |
-| `/api/capture/start` | `POST` | Start a capture session (`device`, `filter`, `useMock`, etc.). |
-| `/api/capture/stop` | `POST` | Stop the running capture session. |
+| `/api/capture/start` | `POST` | Start a capture session (`device`, `filter`, `useMock`, etc.). Auth when configured; rate-limited (5/min). |
+| `/api/capture/stop` | `POST` | Stop the running capture session (auth when configured). |
 | `/api/capture/history` | `GET` | List recent capture sessions (scoped by API key ownership when present). |
 | `/api/capture/history/:id` | `GET` | Session detail with flows + up to 200 packets. |
 | `/api/capture/auth-status` | `GET` | Whether `PACKLY_API_KEY` is configured (`required: boolean`). |
 | `/api/capture/playback` | `GET` | Bundled scan-like sample → packets + diagnostic markdown. |
-| `/api/capture/playback` | `POST` | Upload a classic Ethernet `.pcap` (2 MB max). |
+| `/api/capture/playback` | `POST` | Upload Ethernet `.pcap` / `.pcapng` (2 MB max). |
 | `/api/socket` | `Socket.IO` | Realtime stream (status + packets + errors). |
 | `/api/metrics` | `GET` | Prometheus metrics (Pino logs note status transitions). |
 
