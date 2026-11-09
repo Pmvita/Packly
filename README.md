@@ -27,8 +27,8 @@ Build list: [`TODO.md`](./TODO.md).
 
 ## 🚀 Development Status
 
-![Status](https://img.shields.io/badge/Status-Stable-green?style=for-the-badge)
-![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Locked%20v2-green?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.0-blue?style=for-the-badge)
 
 ## 🌐 Connect With Me
 
@@ -55,7 +55,6 @@ Build list: [`TODO.md`](./TODO.md).
 ## 📊 Monitoring & Observability
 
 ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
 
 ## 🧪 Testing & Quality
 
